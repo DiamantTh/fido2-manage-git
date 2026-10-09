@@ -1,0 +1,38 @@
+pkgbase = fido2-manage-git
+	pkgdesc = Rust FIDO2.1 CLI and Token2 Key Manager GUI for FIDO2, PIV and OTP devices
+	pkgver = r192.81b4155
+	pkgrel = 1
+	url = https://github.com/Token2/fido2-manage
+	arch = x86_64
+	license = BSD-2-Clause
+	makedepends = git
+	makedepends = cmake
+	makedepends = pkgconf
+	makedepends = cargo
+	depends = glibc
+	depends = libgcc
+	depends = libcbor
+	depends = pcsclite
+	depends = openssl
+	depends = systemd-libs
+	depends = zlib
+	depends = gtk3
+	depends = webkit2gtk-4.1
+	depends = glib2
+	depends = cairo
+	depends = gdk-pixbuf2
+	depends = libsoup3
+	depends = dbus
+	depends = wayland
+	depends = hicolor-icon-theme
+	optdepends = ccid: USB CCID smart card reader driver
+	optdepends = pcsc-tools: smart card reader utilities
+	provides = fido2-manage
+	conflicts = fido2-manage
+	options = !lto
+	source = git+https://github.com/Token2/fido2-manage.git#branch=main
+	source = libfido2::git+https://github.com/Yubico/libfido2.git#tag=1.15.0
+	sha256sums = SKIP
+	sha256sums = SKIP
+
+pkgname = fido2-manage-git
