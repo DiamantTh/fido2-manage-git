@@ -96,7 +96,7 @@ package() {
   ln -s token2-fido2-token "$pkgdir/usr/bin/fido2-token2"
 
   install -dm755 "$pkgdir/usr/lib/$_pkgname"
-  cp -a "$srcdir/build-piv/lib/"libt2piv.so* "$pkgdir/usr/lib/$_pkgname/"
+  cp -d --no-preserve=ownership "$srcdir/build-piv/lib/"libt2piv.so* "$pkgdir/usr/lib/$_pkgname/"
 
   install -Dm644 "$srcdir/$_pkgname/token2-piv-gui/src-tauri/icons/icon.png" \
     "$pkgdir/usr/share/icons/hicolor/256x256/apps/fido2-manage.png"
