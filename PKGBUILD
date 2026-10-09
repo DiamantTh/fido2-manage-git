@@ -1,4 +1,5 @@
-# Maintainer: jaime [at] jamezrin [dot] name
+# Maintainer: DiamantTh
+# Contributor: jaime [at] jamezrin [dot] name
 _pkgname=fido2-manage
 _libfido2ver=1.15.0
 pkgname=$_pkgname-git
