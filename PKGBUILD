@@ -9,18 +9,37 @@ pkgdesc="Rust FIDO2.1 CLI and Token2 Key Manager GUI for FIDO2, PIV and OTP devi
 arch=('x86_64')
 url="https://github.com/Token2/fido2-manage"
 license=('BSD-2-Clause')
-depends=('glibc' 'libgcc' 'libcbor' 'pcsclite' 'openssl' 'systemd-libs'
-         'zlib' 'gtk3' 'webkit2gtk-4.1' 'glib2' 'cairo' 'gdk-pixbuf2'
-         'libsoup3' 'dbus' 'wayland' 'hicolor-icon-theme')
-optdepends=('ccid: USB CCID smart card reader driver'
-            'pcsc-tools: smart card reader utilities')
-makedepends=('git' 'cmake' 'pkgconf' 'cargo')
+depends=(
+  'glibc'
+  'libgcc'
+  'libcbor'
+  'pcsclite'
+  'openssl'
+  'systemd-libs'
+  'zlib'
+  'gtk3'
+  'webkit2gtk-4.1'
+  'glib2'
+  'cairo'
+  'gdk-pixbuf2'
+  'libsoup3'
+  'dbus'
+  'wayland'
+  'hicolor-icon-theme'
+)
+makedepends=('cargo' 'cmake' 'git' 'pkgconf')
+optdepends=(
+  'ccid: USB CCID smart card reader driver'
+  'pcsc-tools: smart card reader utilities'
+)
 provides=('fido2-manage')
 conflicts=('fido2-manage')
 # Cargo controls release LTO itself; do not add makepkg's C/Rust LTO flags.
 options=('!lto')
-source=("git+https://github.com/Token2/fido2-manage.git#branch=main"
-        "libfido2::git+https://github.com/Yubico/libfido2.git#tag=$_libfido2ver")
+source=(
+  "git+https://github.com/Token2/fido2-manage.git#branch=main"
+  "libfido2::git+https://github.com/Yubico/libfido2.git#tag=$_libfido2ver"
+)
 sha256sums=('SKIP' 'SKIP')
 
 pkgver() {
@@ -70,7 +89,8 @@ build() {
     -DBUILD_EXAMPLES=OFF \
     -DBUILD_TESTS=OFF \
     -DBUILD_MANPAGES=OFF
-  cmake --build "$srcdir/build-fido2" --target fido2 fido2-token fido2-cred fido2-assert
+  cmake --build "$srcdir/build-fido2" --target \
+    fido2 fido2-token fido2-cred fido2-assert
 
   export T2PIV_LIB_DIR="$srcdir/build-piv/lib"
   export FIDO2_LIB_DIR="$srcdir/build-fido2/src"
@@ -79,25 +99,34 @@ build() {
   export RUSTFLAGS="${RUSTFLAGS:+$RUSTFLAGS }-C link-arg=-Wl,-rpath,/usr/lib/$_pkgname"
 
   cd "$srcdir/$_pkgname/token2-piv-gui/src-tauri"
-  cargo build --frozen --release --features tauri/custom-protocol --bin fido2-manage --bin token2-key-manager
+  cargo build \
+    --frozen \
+    --release \
+    --features tauri/custom-protocol \
+    --bin fido2-manage \
+    --bin token2-key-manager
 }
 
 package() {
   local tool
-  install -Dm755 "$srcdir/cargo-target/release/fido2-manage" "$pkgdir/usr/bin/fido2-manage"
-  install -Dm755 "$srcdir/cargo-target/release/token2-key-manager" "$pkgdir/usr/bin/token2-key-manager"
+  install -Dm755 "$srcdir/cargo-target/release/fido2-manage" \
+    "$pkgdir/usr/bin/fido2-manage"
+  install -Dm755 "$srcdir/cargo-target/release/token2-key-manager" \
+    "$pkgdir/usr/bin/token2-key-manager"
   # Keep the previous GUI entry point for existing shortcuts and scripts.
   ln -s token2-key-manager "$pkgdir/usr/bin/fido2-manage-gui"
 
   # The GUI invokes token2-fido2-token next to its executable for key notes.
   for tool in token cred assert; do
-    install -Dm755 "$srcdir/build-fido2/tools/fido2-$tool" "$pkgdir/usr/bin/token2-fido2-$tool"
+    install -Dm755 "$srcdir/build-fido2/tools/fido2-$tool" \
+      "$pkgdir/usr/bin/token2-fido2-$tool"
   done
   # Keep the old low-level tool name as an alias as well.
   ln -s token2-fido2-token "$pkgdir/usr/bin/fido2-token2"
 
   install -dm755 "$pkgdir/usr/lib/$_pkgname"
-  cp -d --no-preserve=ownership "$srcdir/build-piv/lib/"libt2piv.so* "$pkgdir/usr/lib/$_pkgname/"
+  cp -d --no-preserve=ownership "$srcdir/build-piv/lib/"libt2piv.so* \
+    "$pkgdir/usr/lib/$_pkgname/"
 
   install -Dm644 "$srcdir/$_pkgname/token2-piv-gui/src-tauri/icons/icon.png" \
     "$pkgdir/usr/share/icons/hicolor/256x256/apps/fido2-manage.png"
@@ -113,11 +142,15 @@ Categories=System;Security;
 Keywords=FIDO2;Passkey;PIV;OTP;Security;Authentication;USB;NFC;
 DESKTOP
 
-  install -Dm644 "$srcdir/libfido2/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE.libfido2"
-  install -Dm644 "$srcdir/$_pkgname/token2-piv-tool/COPYING" "$pkgdir/usr/share/licenses/$pkgname/COPYING.libt2piv"
+  install -Dm644 "$srcdir/libfido2/LICENSE" \
+    "$pkgdir/usr/share/licenses/$pkgname/LICENSE.libfido2"
+  install -Dm644 "$srcdir/$_pkgname/token2-piv-tool/COPYING" \
+    "$pkgdir/usr/share/licenses/$pkgname/COPYING.libt2piv"
   # Current upstream declares the application's license in README.md.
-  install -Dm644 "$srcdir/$_pkgname/README.md" "$pkgdir/usr/share/licenses/$pkgname/README.md"
-  install -Dm644 "$srcdir/$_pkgname/README.md" "$pkgdir/usr/share/doc/$pkgname/README.md"
+  install -Dm644 "$srcdir/$_pkgname/README.md" \
+    "$pkgdir/usr/share/licenses/$pkgname/README.md"
+  install -Dm644 "$srcdir/$_pkgname/README.md" \
+    "$pkgdir/usr/share/doc/$pkgname/README.md"
   install -Dm644 "$srcdir/$_pkgname/token2-piv-gui/FIDO2-MANAGE.md" \
     "$pkgdir/usr/share/doc/$pkgname/FIDO2-MANAGE.md"
 }
